@@ -57,9 +57,12 @@
 <div
     class="comment-container"
     class:border={$viewMode === "nested"}
-    class:rounded-md={$viewMode === "nested"}
-    class:p-4={$viewMode === "nested"}
+    class:rounded-xl={$viewMode === "nested"}
+    class:p-5={$viewMode === "nested"}
     class:bg-card={$viewMode === "nested"}
+    class:shadow-sm={$viewMode === "nested"}
+    class:hover:shadow-md={$viewMode === "nested"}
+    class:transition-all={$viewMode === "nested"}
     id="comment-{comment.id}"
 >
     <div class="flex justify-between items-center mb-2">
@@ -75,7 +78,7 @@
             <a
                 class="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer"
                 style="margin-right: 2rem;"
-                href={web_explorer_uri_tx + comment.tx}
+                href={$web_explorer_uri_tx + comment.tx}
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -166,9 +169,9 @@
         </div>
     </div>
 
-    <p class="text-base mb-3">
+    <div class="text-base mb-3 leading-relaxed text-foreground/90 break-words">
         {@html comment.text.replace(/\n/g, "<br>")}
-    </p>
+    </div>
 
     <div class="flex justify-between items-center flex-wrap gap-x-4 gap-y-2">
         <div class="flex items-center gap-4">

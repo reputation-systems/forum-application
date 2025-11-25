@@ -1,6 +1,7 @@
 <script lang="ts">
     import { tick } from "svelte";
     import { Button } from "$lib/components/ui/button/index.js";
+    import { Input } from "$lib/components/ui/input/index.js";
     import { Textarea } from "$lib/components/ui/textarea";
     import { Label } from "$lib/components/ui/label/index.js";
     import { ThumbsUp, ThumbsDown } from "lucide-svelte";
@@ -101,25 +102,22 @@
     }
 </script>
 
-<div class="mb-8 flex items-end space-x-2" style="margin-top: 2rem;">
-    <div class="flex-1">
-        <label for="topic-id-input" class="text-lg font-semibold"
-            >Topic ID</label
+<div
+    class="mb-8 flex items-end gap-3 mt-8 p-6 bg-card border border-border rounded-xl shadow-sm"
+>
+    <div class="flex-1 space-y-2">
+        <Label for="topic-id-input" class="text-base font-semibold"
+            >Topic ID</Label
         >
-        <input
+        <Input
             type="text"
             id="topic-id-input"
             bind:value={topic_id}
-            class="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 sm:text-sm"
-            placeholder="Topic/Project/Discussion ID"
+            placeholder="Enter Topic/Project/Discussion ID"
+            class="font-mono"
         />
     </div>
-    <Button
-        on:click={handleLoadThreads}
-        class="mt-2 h-5 rounded-md px-3 text-sm"
-    >
-        Load
-    </Button>
+    <Button on:click={handleLoadThreads} class="mb-[2px]">Load</Button>
 </div>
 
 <h1 class="text-3xl font-bold mb-6">Comments</h1>
