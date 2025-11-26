@@ -1,9 +1,10 @@
 <script lang="ts">
     import { Button } from "$lib/components/ui/button/index.js";
-    import { X, User, Copy, ExternalLink } from "lucide-svelte";
+    import { X, User, Copy, ExternalLink, Wallet } from "lucide-svelte";
     import { createProfileBox } from "$lib/ergo/commentStore";
     import { fetchProfile } from "$lib/ergo/commentFetch";
     import { web_explorer_uri_tx } from "$lib/ergo/envs";
+    import { address } from "$lib/ergo/store";
     import type { ReputationProof } from "$lib/ergo/object";
 
     export let show = false;
@@ -17,8 +18,6 @@
             isCreating = true;
             try {
                 profile_creation_tx = await createProfileBox();
-                // We need 'ergo' global here. It's available in window/global scope in this app context
-                // but might be safer to pass it or assume it exists if connected.
                 if (typeof ergo !== "undefined") {
                     profile = await fetchProfile(ergo);
                 }
@@ -36,6 +35,7 @@
     }
 
     function copyToClipboard(text: string) {
+        if (!text) return;
         navigator.clipboard.writeText(text);
         // Could add toast here
     }
@@ -53,36 +53,69 @@
                 </div>
                 <h2 class="text-xl font-bold">Your Profile</h2>
             </div>
-            <Button variant="ghost" size="icon" on:click={close}
-                ><X class="w-5 h-5" /></Button
-            >
+            <Button variant="ghost" size="icon" on:click={close}>
+                <X class="w-5 h-5" />
+            </Button>
         </div>
 
         {#if profile}
             <div class="space-y-6">
-                <div
-                    class="p-4 bg-muted/50 rounded-lg border border-border space-y-3"
-                >
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p
-                                class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+                <div class="space-y-3">
+                    <div
+                        class="p-4 bg-muted/50 rounded-lg border border-border"
+                    >
+                        <div class="flex justify-between items-start gap-4">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <Wallet
+                                        class="w-3 h-3 text-muted-foreground"
+                                    />
+                                    <p
+                                        class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+                                    >
+                                        Connected Address
+                                    </p>
+                                </div>
+                                <p class="font-mono text-sm break-all">
+                                    {$address || "Not connected"}
+                                </p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                class="h-8 w-8 shrink-0"
+                                on:click={() => copyToClipboard($address || "")}
+                                disabled={!$address}
                             >
-                                Reputation Token ID
-                            </p>
-                            <p class="font-mono text-sm mt-1 break-all">
-                                {profile.token_id}
-                            </p>
+                                <Copy class="w-4 h-4" />
+                            </Button>
                         </div>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            class="h-6 w-6"
-                            on:click={() =>
-                                copyToClipboard(profile?.token_id || "")}
-                        >
-                            <Copy class="w-3 h-3" />
-                        </Button>
+                    </div>
+
+                    <div
+                        class="p-4 bg-muted/50 rounded-lg border border-border"
+                    >
+                        <div class="flex justify-between items-start gap-4">
+                            <div class="min-w-0 flex-1">
+                                <p
+                                    class="text-xs font-medium text-muted-foreground uppercase tracking-wider"
+                                >
+                                    Reputation Token ID
+                                </p>
+                                <p class="font-mono text-sm mt-1 break-all">
+                                    {profile.token_id}
+                                </p>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                class="h-8 w-8 shrink-0"
+                                on:click={() =>
+                                    copyToClipboard(profile?.token_id || "")}
+                            >
+                                <Copy class="w-4 h-4" />
+                            </Button>
+                        </div>
                     </div>
                 </div>
 
@@ -96,7 +129,7 @@
                                 <thead class="bg-muted/50">
                                     <tr>
                                         <th
-                                            class="px-4 py-2 text-left font-medium text-muted-foreground border-b border-border"
+                                            class="px-4 py-2 text-left font-medium text-muted-foreground border-b border-border w-1/3"
                                             >Key</th
                                         >
                                         <th
@@ -111,7 +144,7 @@
                                             class="bg-card hover:bg-muted/20 transition-colors"
                                         >
                                             <td
-                                                class="px-4 py-3 font-mono text-xs text-muted-foreground"
+                                                class="px-4 py-3 font-mono text-xs text-muted-foreground align-top"
                                                 >{key.toUpperCase()}</td
                                             >
                                             <td
@@ -151,10 +184,24 @@
                     <User class="w-8 h-8 text-muted-foreground" />
                 </div>
                 <h3 class="text-lg font-semibold">No Profile Found</h3>
-                <p class="text-muted-foreground text-sm max-w-xs mx-auto">
-                    Create a reputation profile to start posting comments and
-                    building your trust score on the network.
-                </p>
+
+                <div class="max-w-xs mx-auto space-y-2">
+                    <p class="text-muted-foreground text-sm">
+                        Create a reputation profile to start posting comments.
+                    </p>
+                    {#if $address}
+                        <div
+                            class="bg-muted/50 px-3 py-1 rounded-md inline-block max-w-full"
+                        >
+                            <p
+                                class="text-[10px] font-mono text-muted-foreground truncate max-w-[200px] mx-auto"
+                            >
+                                {$address}
+                            </p>
+                        </div>
+                    {/if}
+                </div>
+
                 <Button
                     class="w-full max-w-xs"
                     on:click={handleCreateProfile}
@@ -197,12 +244,11 @@
 
 <style lang="postcss">
     .modal-backdrop {
-        @apply fixed inset-0 bg-black/80 z-[70] cursor-default;
+        @apply fixed inset-0 bg-black/80 z-[70] cursor-default backdrop-blur-sm;
     }
 
     .modal {
         @apply fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-        bg-card border border-border rounded-xl p-6 w-full max-w-lg z-[80] shadow-2xl;
-        background-color: var(--card);
+        bg-background text-foreground border border-border rounded-xl p-6 w-full max-w-2xl z-[80] shadow-2xl;
     }
 </style>
