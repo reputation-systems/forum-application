@@ -13,7 +13,6 @@
         loadThreads,
         postComment,
     } from "$lib/ergo/commentStore";
-    import { viewMode } from "$lib/ergo/store";
     import { type Comment } from "$lib/ergo/commentObject";
     import type { ReputationProof } from "$lib/ergo/object";
     import CommentItem from "./CommentItem.svelte";
@@ -58,6 +57,27 @@
         {} as Record<string, string>,
     );
 
+    $: allCommentsFlatMap = allCommentsFlat.reduce(
+        (acc, comment) => {
+            acc[comment.id] = comment;
+            return acc;
+        },
+        {} as Record<string, FlatComment>,
+    );
+
+    $: repliesMap = allCommentsFlat.reduce(
+        (acc, comment) => {
+            if (comment._parentId) {
+                if (!acc[comment._parentId]) {
+                    acc[comment._parentId] = [];
+                }
+                acc[comment._parentId].push(comment.id);
+            }
+            return acc;
+        },
+        {} as Record<string, string[]>,
+    );
+
     async function handleLoadThreads() {
         try {
             currentTopicId.set(topic_id);
@@ -90,11 +110,7 @@
         isPostingComment = false;
     }
 
-    // Load threads when topic_id changes or on mount if not loaded
     $: if (topic_id) {
-        // We can trigger load here or let the parent do it.
-        // App.svelte did: currentTopicId.subscribe... loadThreads()
-        // We'll expose a manual load button as well.
         if (get(currentTopicId) !== topic_id) {
             currentTopicId.set(topic_id);
             loadThreads();
@@ -164,18 +180,6 @@
         />
         <Label for="showAll">Show all comments (including spam)</Label>
     </div>
-
-    <div class="flex items-center">
-        <input
-            id="forumView"
-            type="checkbox"
-            on:change={() =>
-                ($viewMode = $viewMode === "nested" ? "forum" : "nested")}
-            checked={$viewMode === "forum"}
-            class="mr-2"
-        />
-        <Label for="forumView">Forum view</Label>
-    </div>
 </div>
 
 {#if $isLoading}
@@ -190,21 +194,6 @@
     <p class="text-muted-foreground text-center py-4">
         No comments yet. Be the first!
     </p>
-{:else if $viewMode === "nested"}
-    <div class="space-y-6">
-        {#each $threads as thread (thread.id)}
-            {#if showAllComments || !thread.isSpam}
-                <CommentItem
-                    comment={thread}
-                    {showAllComments}
-                    {topic_id}
-                    {connect_executed}
-                    {profile}
-                    {allCommentsFlatProfilesMap}
-                />
-            {/if}
-        {/each}
-    </div>
 {:else}
     <div class="forum-container flex flex-col">
         {#each allCommentsFlat as flatComment (flatComment.id)}
@@ -220,6 +209,8 @@
                         {connect_executed}
                         {profile}
                         {allCommentsFlatProfilesMap}
+                        {repliesMap}
+                        {allCommentsFlatMap}
                     />
                 </div>
             {/if}

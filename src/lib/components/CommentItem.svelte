@@ -2,11 +2,10 @@
     import { Button } from "$lib/components/ui/button/index.js";
     import { Textarea } from "$lib/components/ui/textarea";
     import { Label } from "$lib/components/ui/label/index.js";
-    import { ThumbsUp, ThumbsDown } from "lucide-svelte";
-    import { web_explorer_uri_tx } from "$lib/ergo/envs";
+    import { ThumbsUp, ThumbsDown, Reply } from "lucide-svelte"; // 💡 AGREGADO: Reply icon
+    import { web_explorer_uri_tx, web_explorer_uri_tkn } from "$lib/ergo/envs";
     import { getScore, type Comment } from "$lib/ergo/commentObject";
     import { replyToComment, flagSpam } from "$lib/ergo/commentStore";
-    import { viewMode } from "$lib/ergo/store";
     import * as jdenticon from "jdenticon";
     import type { ReputationProof } from "$lib/ergo/object";
 
@@ -18,12 +17,20 @@
     export let _parentId: string | undefined = undefined;
     export let allCommentsFlatProfilesMap: Record<string, string> = {};
 
+    export let repliesMap: Record<string, string[]> = {};
+    export let allCommentsFlatMap: Record<
+        string,
+        Comment & { _parentId?: string }
+    > = {};
+
     let replyText = "";
     let isReplying = false;
     let isFlagging = false;
     let commentError: string | null = null;
     let showReplyForm = false;
     let replySentiment: boolean | null = null;
+
+    $: parentComment = _parentId ? allCommentsFlatMap[_parentId] : undefined;
 
     function getAvatarSvg(tokenId: string, size = 40): string {
         return jdenticon.toSvg(tokenId, size);
@@ -54,105 +61,29 @@
     }
 </script>
 
-<div
-    class="comment-container"
-    class:border={$viewMode === "nested"}
-    class:rounded-xl={$viewMode === "nested"}
-    class:p-5={$viewMode === "nested"}
-    class:bg-card={$viewMode === "nested"}
-    class:shadow-sm={$viewMode === "nested"}
-    class:hover:shadow-md={$viewMode === "nested"}
-    class:transition-all={$viewMode === "nested"}
-    id="comment-{comment.id}"
->
+<div class="comment-container" id="comment-{comment.id}">
     <div class="flex justify-between items-center mb-2">
-        <div class="flex items-center gap-2">
-            <div class="avatar w-10 h-10 rounded-full overflow-hidden">
-                {@html getAvatarSvg(comment.authorProfileTokenId, 40)}
-            </div>
-
-            <span class="font-semibold text-sm"
-                >@{comment.authorProfileTokenId.slice(0, 6)}</span
-            >
-
+        <div class="flex items-center gap-4">
             <a
-                class="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer"
-                style="margin-right: 2rem;"
-                href={$web_explorer_uri_tx + comment.tx}
+                href="{web_explorer_uri_tkn}{comment.authorProfileTokenId}"
                 target="_blank"
                 rel="noopener noreferrer"
+                class="flex items-center gap-2 group hover:underline"
             >
-                #{comment.id.slice(0, 6)}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-3 h-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M14 3h7v7m0-7L10 14m-4 0H3v-7a2 2 0 012-2h7z"
-                    />
-                </svg>
-            </a>
-
-            {#if $viewMode === "nested"}
-                {#if comment.sentiment === true}
-                    <ThumbsUp class="h-4 w-4 text-green-500" />
-                {:else if comment.sentiment === false}
-                    <ThumbsDown class="h-4 w-4 text-red-500" />
-                {/if}
-                <span
-                    class="text-sm font-medium"
-                    class:text-green-600={getScore(comment) > 0}
-                    class:text-red-600={getScore(comment) < 0}
-                    class:text-gray-500={getScore(comment) === 0}
-                >
-                    {getScore(comment)}
+                <div class="avatar w-10 h-10 rounded-full overflow-hidden">
+                    {@html getAvatarSvg(comment.authorProfileTokenId, 40)}
+                </div>
+                <span class="font-semibold text-sm group-hover:text-primary">
+                    @{comment.authorProfileTokenId.slice(0, 10)}...
                 </span>
-            {/if}
+            </a>
         </div>
 
         <div class="flex items-center gap-3 text-xs text-muted-foreground">
-            {#if $viewMode === "forum" && _parentId}
-                <span class="flex items-center gap-1">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        class="lucide lucide-reply"
-                        ><polyline points="9 17 4 12 9 7" /><path
-                            d="M20 18v-2a4 4 0 0 0-4-4H4"
-                        /></svg
-                    >
-                    <!-- svelte-ignore a11y-missing-attribute -->
-                    <a class="hover:text-primary">
-                        {#if allCommentsFlatProfilesMap && allCommentsFlatProfilesMap[_parentId]}
-                            <span class="font-semibold"
-                                >@{allCommentsFlatProfilesMap[_parentId].slice(
-                                    0,
-                                    6,
-                                )}</span
-                            >
-                        {/if}
-
-                        <span class="ml-1 opacity-80"
-                            >#{_parentId.slice(0, 6)}</span
-                        >
-                    </a>
-                </span>
-            {/if}
-
-            <span class="flex-shrink-0">
+            <span
+                class="flex-shrink-0"
+                title={new Date(comment.timestamp).toLocaleString()}
+            >
                 {#if comment.posting}
                     <a
                         href={`${web_explorer_uri_tx}${comment.tx}`}
@@ -166,8 +97,40 @@
                     {new Date(comment.timestamp).toLocaleString()}
                 {/if}
             </span>
+            <a
+                class="flex items-center text-xs text-muted-foreground gap-1 cursor-pointer hover:text-primary"
+                href={$web_explorer_uri_tx + comment.tx}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Ver Transacción (TX ID)"
+            >
+                TX: #{comment.tx.slice(0, 6)}...
+            </a>
+
+            <span title="ID del Comentario (Box ID)">
+                Box: #{comment.id.slice(0, 6)}...
+            </span>
         </div>
     </div>
+
+    {#if true && parentComment}
+        <blockquote
+            class="mb-3 border-l-2 border-border pl-3 text-sm text-muted-foreground italic"
+        >
+            <a href="#comment-{_parentId}" class="hover:underline">
+                Respondiendo a @{parentComment.authorProfileTokenId.slice(
+                    0,
+                    10,
+                )}...
+            </a>
+            <p class="mt-1">
+                "{parentComment.text.slice(0, 75)}{parentComment.text.length >
+                75
+                    ? "..."
+                    : ""}"
+            </p>
+        </blockquote>
+    {/if}
 
     <div class="text-base mb-3 leading-relaxed text-foreground/90 break-words">
         {@html comment.text.replace(/\n/g, "<br>")}
@@ -181,7 +144,8 @@
                 on:click={() => (showReplyForm = !showReplyForm)}
                 disabled={!profile}
             >
-                {showReplyForm ? "Cancel" : "Reply"}
+                <Reply class="w-4 h-4 mr-1" />
+                {showReplyForm ? "Cancelar" : "Responder"}
             </Button>
             {#if !comment.isSpam}
                 <Button
@@ -191,14 +155,16 @@
                     on:click={handleFlag}
                     disabled={isFlagging || !profile}
                 >
-                    {isFlagging ? "Flagging..." : "Mark Spam"}
+                    {isFlagging ? "Flagging..." : "Marcar Spam"}
                 </Button>
             {:else}
-                <span class="text-xs text-muted-foreground">Spam</span>
+                <span class="text-xs text-muted-foreground italic"
+                    >Marcado como Spam</span
+                >
             {/if}
         </div>
 
-        {#if $viewMode === "forum"}
+        <div class="flex items-center gap-4">
             <div class="flex items-center gap-2">
                 {#if comment.sentiment === true}
                     <ThumbsUp class="h-4 w-4 text-green-500" />
@@ -214,7 +180,21 @@
                     {getScore(comment)}
                 </span>
             </div>
-        {/if}
+
+            {#if repliesMap[comment.id] && repliesMap[comment.id].length > 0}
+                <span class="text-xs text-muted-foreground">
+                    Respuestas ({repliesMap[comment.id].length}):
+                    {#each repliesMap[comment.id].slice(0, 3) as replyId}
+                        <a
+                            href="#comment-{replyId}"
+                            class="ml-1 hover:text-primary underline"
+                        >
+                            #{replyId.slice(0, 6)}...
+                        </a>
+                    {/each}
+                </span>
+            {/if}
+        </div>
     </div>
 
     {#if commentError}
@@ -256,29 +236,11 @@
             </div>
         </form>
     {/if}
-
-    {#if $viewMode === "nested"}
-        {#if comment.replies && comment.replies.length > 0}
-            <div class="replies-container mt-4 space-y-4">
-                {#each comment.replies as reply (reply.id)}
-                    {#if showAllComments || !reply.isSpam}
-                        <svelte:self
-                            comment={reply}
-                            {showAllComments}
-                            {topic_id}
-                            {connect_executed}
-                            {profile}
-                            {allCommentsFlatProfilesMap}
-                        />
-                    {/if}
-                {/each}
-            </div>
-        {/if}
-    {/if}
 </div>
 
 <style lang="postcss">
     .replies-container {
+        /* Se mantiene el estilo de indentación para la vista anidada */
         @apply pl-6 border-l-2 border-border;
     }
 </style>
