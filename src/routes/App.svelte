@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import { browser } from "$app/environment";
+	import { page } from "$app/stores";
+	import { goto } from "$app/navigation";
 	import Theme from "./Theme.svelte";
 	import { currentProjectId as currentTopicId } from "$lib/ergo/commentStore";
 	import { address, connected, balance, network } from "$lib/ergo/store";
@@ -132,6 +134,28 @@
 	}
 
 	$: ergInErgs = $balance ? (Number($balance) / 1_000_000_000).toFixed(4) : 0;
+
+	// URL Synchronization
+	$: {
+		const urlTopic = $page.url.searchParams.get("topic");
+		if (urlTopic && urlTopic !== topic_id) {
+			topic_id = urlTopic;
+		}
+	}
+
+	$: {
+		if (browser && topic_id) {
+			const url = new URL(window.location.href);
+			if (url.searchParams.get("topic") !== topic_id) {
+				url.searchParams.set("topic", topic_id);
+				goto(url.toString(), {
+					keepFocus: true,
+					replaceState: true,
+					noScroll: true,
+				});
+			}
+		}
+	}
 </script>
 
 <!-- HEADER -->

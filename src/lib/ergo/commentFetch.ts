@@ -199,7 +199,7 @@ export async function fetchComments(discussion: string, reply: boolean = false):
         }
 
         const number_of_spans = await fetchSpan(box.boxId);
-        const isSpam = number_of_spans > SPAM_LIMIT;
+        const isSpam = number_of_spans > Number(get(SPAM_LIMIT));
 
         textContent = await marked(textContent);
         textContent = DOMPurify.sanitize(textContent);

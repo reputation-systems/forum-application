@@ -7,7 +7,9 @@
         explorer_uri,
         web_explorer_uri_tx,
         web_explorer_uri_addr,
+        web_explorer_uri_addr,
         web_explorer_uri_tkn,
+        SPAM_LIMIT,
     } from "$lib/ergo/envs";
 
     export let show = false;
@@ -17,7 +19,9 @@
         api: "https://api.ergoplatform.com",
         tx: "https://sigmaspace.io/en/transaction/",
         addr: "https://sigmaspace.io/en/address/",
+        addr: "https://sigmaspace.io/en/address/",
         tkn: "https://sigmaspace.io/en/token/",
+        spam: "0",
     };
 
     function close() {
@@ -29,7 +33,9 @@
         $explorer_uri = DEFAULTS.api;
         $web_explorer_uri_tx = DEFAULTS.tx;
         $web_explorer_uri_addr = DEFAULTS.addr;
+        $web_explorer_uri_addr = DEFAULTS.addr;
         $web_explorer_uri_tkn = DEFAULTS.tkn;
+        $SPAM_LIMIT = DEFAULTS.spam;
     }
 </script>
 
@@ -93,6 +99,19 @@
                 />
                 <p class="text-xs text-muted-foreground">
                     URL prefix for viewing tokens.
+                </p>
+            </div>
+
+            <div class="space-y-2">
+                <Label for="spam-limit">Spam Limit</Label>
+                <Input
+                    id="spam-limit"
+                    bind:value={$SPAM_LIMIT}
+                    placeholder={DEFAULTS.spam}
+                    type="number"
+                />
+                <p class="text-xs text-muted-foreground">
+                    Minimum number of spam flags to hide a comment.
                 </p>
             </div>
         </div>
