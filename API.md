@@ -1,4 +1,4 @@
-# ForumParametric Component
+# Forum Component
 
 Componente Forum parametrizable para la librería de reputación de Ergo.
 
@@ -30,12 +30,12 @@ Puedes pasar tus propios stores de Svelte para controlar la configuración:
 
 ```svelte
 <script>
-  import { ForumParametric } from 'forum-application';
+  import { Forum } from 'forum-application';
   
   let topicId = "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a";
 </script>
 
-<ForumParametric 
+<Forum 
   topic_id={topicId}
   maxWidth="800px"
 />
@@ -45,7 +45,7 @@ Puedes pasar tus propios stores de Svelte para controlar la configuración:
 
 ```svelte
 <script>
-  import { ForumParametric } from 'forum-application';
+  import { Forum } from 'forum-application';
   import { writable } from 'svelte/store';
   
   let topicId = "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a";
@@ -56,7 +56,7 @@ Puedes pasar tus propios stores de Svelte para controlar la configuración:
   const myExplorerApi = writable("https://api.ergoplatform.com");
 </script>
 
-<ForumParametric 
+<Forum 
   topic_id={topicId}
   spam_limit={mySpamLimit}
   web_explorer_uri_tx={myExplorerTx}
@@ -75,12 +75,12 @@ Puedes pasar tus propios stores de Svelte para controlar la configuración:
 
 ```svelte
 <script>
-  import { ForumParametric } from 'forum-application';
+  import { Forum } from 'forum-application';
   
   let topicId = "716f6e863f744b9ac22c97ec7b76ea5f5908bc5b2f67c61510bfc4751384ea7a";
 </script>
 
-<ForumParametric 
+<Forum 
   topic_id={topicId}
   showTopicInput={false}
   showSpamToggle={false}

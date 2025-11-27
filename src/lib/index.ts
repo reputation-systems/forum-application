@@ -1,6 +1,6 @@
 // Components
 export { default as Forum } from './components/Forum.svelte';
-export { default as ForumParametric } from './components/ForumParametric.svelte';
+export { default as Forum } from './components/Forum.svelte'; // Alias for compatibility
 
 // Ergo Logic
 export * from './ergo/commentFetch';

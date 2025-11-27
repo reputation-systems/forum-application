@@ -6,12 +6,18 @@
 	import Theme from "./Theme.svelte";
 	import { currentProjectId as currentTopicId } from "$lib/ergo/commentStore";
 	import { address, connected, balance, network } from "$lib/ergo/store";
-	import { explorer_uri, web_explorer_uri_tx } from "$lib/ergo/envs";
+	import {
+		explorer_uri,
+		web_explorer_uri_tx,
+		web_explorer_uri_addr,
+		web_explorer_uri_tkn,
+		SPAM_LIMIT,
+	} from "$lib/ergo/envs";
 	import { fetchProfile } from "$lib/ergo/commentFetch";
 	import { type ReputationProof } from "$lib/ergo/object";
 	import { User, Settings } from "lucide-svelte";
 	import { get } from "svelte/store";
-	import Forum from "$lib/components/Forum.svelte";
+	import { Forum } from "$lib/index.js";
 	import SettingsModal from "$lib/components/SettingsModal.svelte";
 	import ProfileModal from "$lib/components/ProfileModal.svelte";
 
@@ -208,7 +214,18 @@
 			</p>
 		{/if}
 
-		<Forum bind:topic_id {profile} {connect_executed} />
+		<Forum
+			bind:topic_id
+			{profile}
+			{connect_executed}
+			spam_limit={SPAM_LIMIT}
+			{web_explorer_uri_tx}
+			{web_explorer_uri_addr}
+			{web_explorer_uri_tkn}
+			{explorer_uri}
+			showTopicInput={true}
+			maxWidth="100%"
+		/>
 	</div>
 </main>
 
