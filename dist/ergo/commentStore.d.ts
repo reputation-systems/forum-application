@@ -1,0 +1,10 @@
+import { type Comment } from './commentObject';
+export declare function createProfileBox(): Promise<string>;
+export declare const threads: import("svelte/store").Writable<Comment[]>;
+export declare const isLoading: import("svelte/store").Writable<boolean>;
+export declare const error: import("svelte/store").Writable<string | null>;
+export declare const currentProjectId: import("svelte/store").Writable<string>;
+export declare function loadThreads(): Promise<void>;
+export declare function postComment(text: string, sentiment: boolean): Promise<void>;
+export declare function replyToComment(parentCommentId: string, text: string, sentiment: boolean): Promise<void>;
+export declare function flagSpam(targetCommentId: string): Promise<void>;

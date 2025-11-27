@@ -37,7 +37,19 @@
 		"vitest": "^3.2.4",
 		"zod": "^3.24.1"
 	},
+	"peerDependencies": {
+		"svelte": "^4"
+	},
+	"files": ["dist"],
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"type": "module",
+	"exports": {
+		".": {
+		"svelte": "./dist/index.js",
+		"types": "./dist/index.d.ts"
+		}
+	},
 	"dependencies": {
 		"@fleet-sdk/compiler": "^0.12.0",
 		"@fleet-sdk/core": "^0.12.0",
