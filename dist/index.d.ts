@@ -1,5 +1,4 @@
 export { default as Forum } from './components/Forum.svelte';
-export { default as Forum } from './components/Forum.svelte';
 export * from './ergo/commentFetch';
 export * from './ergo/commentObject';
 export * from './ergo/commentStore';
