@@ -105,3 +105,94 @@ You can pass your own Svelte stores to control the configuration:
   * If custom stores are not provided, the component uses local stores with default values.
   * The component requires the user to have an Ergo wallet connected for interaction.
   * Changes in the stores are immediately reflected in the component.
+
+# TypeScript SDK
+
+The library exposes core TypeScript functions and types, allowing you to build custom interfaces or integrate the forum logic into any TypeScript framework (React, Vue, Angular, etc.).
+
+## 1. Fetching Data (`commentFetch`)
+
+Functions to retrieve data from the blockchain.
+
+```typescript
+import { fetchComments, fetchProfile, getTimestampFromBlockId } from 'forum-application';
+
+// Fetch all comments for a specific topic/project ID
+const topicId = "your_topic_id_here";
+const comments = await fetchComments(topicId);
+
+// Fetch the reputation profile of the connected user
+// 'ergo' is the wallet connector object (e.g., from nautilus)
+const profile = await fetchProfile(ergo);
+
+// Get timestamp for a block
+const timestamp = await getTimestampFromBlockId("block_id_here");
+```
+
+## 2. Data Structures (`commentObject`)
+
+Types and helper functions for handling comment data.
+
+```typescript
+import { type Comment, getScore } from 'forum-application';
+
+// Comment Interface
+// interface Comment {
+//     id: string;
+//     text: string;
+//     authorProfileTokenId: string;
+//     ...
+// }
+
+// Calculate the score of a comment (based on replies and sentiment)
+const score = getScore(myComment);
+```
+
+## 3. Actions & State (`commentStore`)
+
+Functions to interact with the blockchain (create comments, replies, etc.).
+Note: The `...API` functions return Promises and do not rely on Svelte stores, making them suitable for any framework.
+
+**Important:** You must call `fetchProfile(ergo)` at least once before calling `postCommentAPI`, `replyToCommentAPI`, or `flagSpamAPI`, so that the library knows the user's profile state.
+
+```typescript
+import { 
+  postCommentAPI, 
+  replyToCommentAPI, 
+  flagSpamAPI, 
+  createProfileBox 
+} from 'forum-application';
+
+const topicId = "your_topic_id_here";
+
+// Create a new comment
+// Returns the new Comment object
+const newComment = await postCommentAPI(topicId, "This is my comment", true); // true = positive, false = negative
+
+// Reply to a comment
+const parentCommentId = "parent_box_id";
+const reply = await replyToCommentAPI(parentCommentId, topicId, "My reply", true);
+
+// Flag a comment as spam
+await flagSpamAPI("spam_comment_id");
+
+// Create a profile (if fetchProfile returns null)
+await createProfileBox();
+```
+
+### Svelte Stores
+If you are using Svelte, you can use the reactive stores directly:
+
+```typescript
+import { threads, loadThreads, postComment } from 'forum-application';
+
+// Subscribe to threads
+threads.subscribe(comments => { ... });
+
+// Load threads into the store
+await loadThreads();
+
+// Post using the store (updates 'threads' automatically)
+await postComment("My comment", true);
+```
+

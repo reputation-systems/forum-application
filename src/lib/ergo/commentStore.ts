@@ -14,7 +14,7 @@ import {
 
 
 
-async function fetchThreadsAPI(projectId: string): Promise<Comment[]> {
+export async function fetchThreadsAPI(projectId: string): Promise<Comment[]> {
     console.log("API: fetchThreads", { projectId });
     return await fetchComments(projectId);
 }
@@ -46,7 +46,7 @@ export async function createProfileBox(): Promise<string> {
  * Gets the main box (the one with the most tokens) from the 'reputation_proof' store.
  * If the store is empty, it attempts to create the initial profile proof.
  */
-async function getOrCreateProfileBox(): Promise<RPBox|null> {
+async function getOrCreateProfileBox(): Promise<RPBox | null> {
     const proof = get(reputation_proof);
 
     // --- Case 1: The profile proof does NOT exist ---
@@ -79,7 +79,7 @@ async function getOrCreateProfileBox(): Promise<RPBox|null> {
 
 }
 
-async function postCommentAPI(projectId: string, text: string, sentiment: boolean): Promise<Comment> {
+export async function postCommentAPI(projectId: string, text: string, sentiment: boolean): Promise<Comment> {
     console.log("API: postComment", { projectId, text });
 
     const inputProofBox = await getOrCreateProfileBox();
@@ -113,7 +113,7 @@ async function postCommentAPI(projectId: string, text: string, sentiment: boolea
     return newComment;
 }
 
-async function replyToCommentAPI(
+export async function replyToCommentAPI(
     parentCommentId: string,
     projectId: string,
     text: string,
@@ -152,7 +152,7 @@ async function replyToCommentAPI(
     return newReply;
 }
 
-async function flagSpamAPI(targetCommentId: string): Promise<{ targetCommentId: string }> {
+export async function flagSpamAPI(targetCommentId: string): Promise<{ targetCommentId: string }> {
     console.log("API: flagSpam", { targetCommentId });
 
     const inputProofBox = await getOrCreateProfileBox();
