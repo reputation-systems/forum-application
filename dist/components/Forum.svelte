@@ -13,7 +13,6 @@ import {
 } from "../ergo/commentStore";
 import { reputation_proof } from "../ergo/store";
 import { fetchProfile } from "../ergo/commentFetch";
-import { connected } from "../ergo/store";
 import { Button } from "./ui/button/index.js";
 import { Input } from "./ui/input/index.js";
 import { Label } from "./ui/label/index.js";
@@ -33,6 +32,7 @@ export let showSpamToggle = true;
 export let showTopicScore = true;
 export let profile = null;
 export let connect_executed = false;
+export let connected = false;
 let newCommentText = "";
 let isPostingComment = false;
 let sentiment = null;
@@ -149,7 +149,7 @@ $:
     return acc + getScore(comment);
   }, 0);
 $:
-  if ($connected && typeof window !== "undefined" && typeof ergo !== "undefined") {
+  if (connected && typeof window !== "undefined" && typeof ergo !== "undefined") {
     loadUserProfile();
   }
 async function loadUserProfile() {
@@ -162,7 +162,7 @@ async function loadUserProfile() {
 }
 onMount(async () => {
   handleLoadThreads();
-  if ($connected && typeof ergo !== "undefined") {
+  if (connected && typeof ergo !== "undefined") {
     await loadUserProfile();
   }
 });
@@ -217,7 +217,7 @@ onMount(async () => {
     </div>
 
     <div class="mb-6">
-        {#if !$connected}
+        {#if !connected}
             <div
                 class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-lg text-center"
             >

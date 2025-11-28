@@ -9,7 +9,7 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test": "vitest",
+		"test": "vitdest",
 		"package": "svelte-package"
 	},
 	"devDependencies": {
@@ -40,14 +40,16 @@
 	"peerDependencies": {
 		"svelte": "^4"
 	},
-	"files": ["dist"],
+	"files": [
+		"dist"
+	],
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
-		"svelte": "./dist/index.js",
-		"types": "./dist/index.d.ts"
+			"svelte": "./dist/index.js",
+			"types": "./dist/index.d.ts"
 		}
 	},
 	"dependencies": {

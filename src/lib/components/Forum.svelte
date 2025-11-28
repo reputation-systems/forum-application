@@ -14,7 +14,6 @@
     } from "$lib/ergo/commentStore";
     import { reputation_proof } from "$lib/ergo/store";
     import { fetchProfile } from "$lib/ergo/commentFetch";
-    import { connected } from "$lib/ergo/store";
     import { Button } from "$lib/components/ui/button/index.js";
     import { Input } from "$lib/components/ui/input/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
@@ -43,6 +42,7 @@
     // Props de compatibilidad
     export let profile: any = null;
     export let connect_executed = false;
+    export let connected = false;
 
     // Estados internos
     let newCommentText = "";
@@ -178,7 +178,7 @@
 
     // Watch for wallet connection changes and load profile
     $: if (
-        $connected &&
+        connected &&
         typeof window !== "undefined" &&
         typeof ergo !== "undefined"
     ) {
@@ -197,7 +197,7 @@
     onMount(async () => {
         handleLoadThreads();
 
-        if ($connected && typeof ergo !== "undefined") {
+        if (connected && typeof ergo !== "undefined") {
             await loadUserProfile();
         }
     });
@@ -252,7 +252,7 @@
     </div>
 
     <div class="mb-6">
-        {#if !$connected}
+        {#if !connected}
             <div
                 class="bg-amber-500/10 border border-amber-500/20 p-4 rounded-lg text-center"
             >

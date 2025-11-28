@@ -14,6 +14,7 @@ declare const __propDef: {
         showTopicScore?: boolean;
         profile?: any;
         connect_executed?: boolean;
+        connected?: boolean;
     };
     events: {
         [evt: string]: CustomEvent<any>;
