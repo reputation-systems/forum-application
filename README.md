@@ -4,6 +4,8 @@
 
 This repository describes a **decentralized Forum application** built on the Ergo blockchain, based on the **Ergo Reputation System**. The app allows users to create profiles (reputation proofs), post topics and discussions, reply to posts (forming threads), and flag boxes as spam. Every action is represented on-chain as a **box** with a fixed register layout, where replies and spam flags reference the **box_id** of the targeted box.
 
+> This document explains the functionality of the **Svelte Forum component** (Svelte 4). For a detailed list of all available properties and examples, please refer to the **[Library API Reference](LIBRARY.md)**.
+
 # Core Concepts
 
 ## Boxes and Registers
