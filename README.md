@@ -54,7 +54,7 @@ Every forum object is an Ergo box that follows a common reputation-proof contrac
 
 * **REPLY**
 
-  * `R5`: `parent_box_id` (the Ergo `box_id` of the comment/topic being replied to). **This is the main change**: replies reference the *box id* of the parent.
+  * `R5`: `parent_box_id` (the Ergo `box_id` of the comment/topic being replied to). Replies reference the *box id* of the parent.
   * `R6`: `true` (locked — immutable reply box).
   * `R8`: `Boolean` (opinion flag — optional app semantics).
   * `R9`: reply content (message text, or encoded payload).
