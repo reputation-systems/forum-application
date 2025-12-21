@@ -3,7 +3,7 @@ import { reputation_proof } from './store';
 import { generate_reputation_proof } from './submit';
 import { fetchComments } from './commentFetch';
 import { COMMENT_TYPE_NFT_ID, DISCUSSION_TYPE_NFT_ID, PROFILE_TOTAL_SUPPLY, PROFILE_TYPE_NFT_ID, SPAM_FLAG_NFT_ID } from './envs';
-async function fetchThreadsAPI(projectId) {
+export async function fetchThreadsAPI(projectId) {
     console.log("API: fetchThreads", { projectId });
     return await fetchComments(projectId);
 }
@@ -41,7 +41,7 @@ async function getOrCreateProfileBox() {
         return mainBox;
     }
 }
-async function postCommentAPI(projectId, text, sentiment) {
+export async function postCommentAPI(projectId, text, sentiment) {
     console.log("API: postComment", { projectId, text });
     const inputProofBox = await getOrCreateProfileBox();
     const tx = await generate_reputation_proof(1, PROFILE_TOTAL_SUPPLY, DISCUSSION_TYPE_NFT_ID, projectId, sentiment, text, true, inputProofBox);
@@ -62,7 +62,7 @@ async function postCommentAPI(projectId, text, sentiment) {
     };
     return newComment;
 }
-async function replyToCommentAPI(parentCommentId, projectId, text, sentiment) {
+export async function replyToCommentAPI(parentCommentId, projectId, text, sentiment) {
     console.log("API: replyToComment", { parentCommentId, projectId, text });
     const inputProofBox = await getOrCreateProfileBox();
     const tx = await generate_reputation_proof(1, PROFILE_TOTAL_SUPPLY, COMMENT_TYPE_NFT_ID, parentCommentId, sentiment, text, true, inputProofBox);
@@ -83,7 +83,7 @@ async function replyToCommentAPI(parentCommentId, projectId, text, sentiment) {
     };
     return newReply;
 }
-async function flagSpamAPI(targetCommentId) {
+export async function flagSpamAPI(targetCommentId) {
     console.log("API: flagSpam", { targetCommentId });
     const inputProofBox = await getOrCreateProfileBox();
     const tx = await generate_reputation_proof(1, PROFILE_TOTAL_SUPPLY, SPAM_FLAG_NFT_ID, targetCommentId, true, null, true, inputProofBox);
