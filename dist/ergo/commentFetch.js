@@ -37,9 +37,9 @@ export async function fetchComments(discussion, reply = false) {
     console.log("fetchComments", { discussion }, reply);
     let comments = [];
     try {
-        const boxesGenerator = searchBoxes(get(explorer_uri), undefined, reply ? COMMENT_TYPE_NFT_ID : DISCUSSION_TYPE_NFT_ID, discussion, true // is_locked
-        );
+        const boxesGenerator = searchBoxes(get(explorer_uri), undefined, reply ? COMMENT_TYPE_NFT_ID : DISCUSSION_TYPE_NFT_ID, discussion);
         for await (const boxes of boxesGenerator) {
+            console.log("boxes", boxes);
             for (const box of boxes) {
                 if (!box.assets?.length)
                     continue;
