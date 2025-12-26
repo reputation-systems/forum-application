@@ -1,6 +1,8 @@
 import { get } from 'svelte/store';
 import { proofs, compute_deep_level } from "./store";
 import { stringToRendered } from "./utils";
+// --- CORE TYPES ---
+// Types are now imported from ergo-reputation-system
 // --- ENUMS & UTILITIES ---
 export function token_rendered(proof) {
     return stringToRendered(proof.token_id);
@@ -19,7 +21,7 @@ export function compute(proof, target_object_pointer) {
     return internal_compute(all_proofs, proof, target_object_pointer, get(compute_deep_level));
 }
 function internal_compute(all_proofs, proof, target_object_pointer, deep_level) {
-    console.log(`Compute (deep_level: ${deep_level}) on proof: ${proof.type.typeName} (${proof.token_id})`);
+    console.log(`Compute (deep_level: ${deep_level}) on proof: ${proof.types[0]?.typeName} (${proof.token_id})`);
     return proof.current_boxes.reduce((total, box) => {
         if (proof.total_amount === 0)
             return total; // Avoid division by zero
@@ -30,7 +32,7 @@ function internal_compute(all_proofs, proof, target_object_pointer, deep_level) 
     }, 0);
 }
 function computeBoxReputation(all_proofs, parent_proof, box, target_object_pointer, deep_level) {
-    if (parent_proof.type.typeName.includes("Proof-by-Token")) {
+    if (parent_proof.types[0]?.typeName.includes("Proof-by-Token")) {
         const pointed_token_id = box.object_pointer;
         if (pointed_token_id === parent_proof.token_id)
             return 0.00;

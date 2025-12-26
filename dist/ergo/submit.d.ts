@@ -1,14 +1,6 @@
 import { type RPBox } from './object';
 /**
  * Generates or modifies a reputation proof by building and submitting a transaction.
- * @param token_amount The amount of the token for the new proof box.
- * @param total_supply The total supply of the reputation token set.
- * @param type_nft_id The token ID of the Type NFT that defines the standard for this proof.
- * @param object_pointer The object this proof is about (e.g., a URL, another token ID).
- * @param polarization `true` for a positive proof, `false` for a negative one.
- * @param content The JSON or string content for register R9.
- * @param is_locked `true` to make the resulting box immutable.
- * @param input_proof The existing RPBox to spend from (for splitting or modifying).
- * @returns A promise that resolves to the transaction ID string, or null on failure.
+ * This is now a wrapper around the ergo-reputation-system library.
  */
 export declare function generate_reputation_proof(token_amount: number, total_supply: number, type_nft_id: string, object_pointer: string | undefined, polarization: boolean, content: object | string | null, is_locked?: boolean, input_proof?: RPBox): Promise<string | null>;

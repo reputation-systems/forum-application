@@ -1,43 +1,11 @@
-import { type Amount, type Box } from "@fleet-sdk/core";
+import { type ReputationProof, type RPBox, type TypeNFT } from "ergo-reputation-system";
+export { type ReputationProof, type RPBox, type TypeNFT };
 import { get } from 'svelte/store';
 import { proofs, compute_deep_level } from "./store";
 import { stringToRendered } from "./utils";
 
 // --- CORE TYPES ---
-
-export interface TypeNFT {
-    tokenId: string;
-    boxId: string;
-    typeName: string;
-    description: string;
-    schemaURI: string;
-    isRepProof: boolean;
-}
-
-export interface ReputationProof {
-    token_id: string;
-    type: TypeNFT;  // SELF identification of the proof type (by Type NFT)
-    total_amount: number;
-    owner_address: string;
-    owner_serialized: string;
-    can_be_spend: boolean;
-    current_boxes: RPBox[];
-    number_of_boxes: number;
-    network: Network;
-    data: object;
-}
-
-export interface RPBox {
-    box: Box<Amount>;
-    box_id: string;
-    type: TypeNFT; 
-    token_id: string;
-    token_amount: number;
-    object_pointer: string;
-    is_locked: boolean;
-    polarization: boolean;
-    content: object|string|null;
-}
+// Types are now imported from ergo-reputation-system
 
 // --- ENUMS & UTILITIES ---
 
@@ -70,8 +38,8 @@ function internal_compute(
     target_object_pointer: string,
     deep_level: number
 ): number {
-    console.log(`Compute (deep_level: ${deep_level}) on proof: ${proof.type.typeName} (${proof.token_id})`);
-    
+    console.log(`Compute (deep_level: ${deep_level}) on proof: ${proof.types[0]?.typeName} (${proof.token_id})`);
+
     return proof.current_boxes.reduce((total, box) => {
         if (proof.total_amount === 0) return total; // Avoid division by zero
         const proportion = box.token_amount / proof.total_amount;
@@ -88,7 +56,7 @@ function computeBoxReputation(
     target_object_pointer: string,
     deep_level: number
 ): number {
-    if (parent_proof.type.typeName.includes("Proof-by-Token")) {
+    if (parent_proof.types[0]?.typeName.includes("Proof-by-Token")) {
         const pointed_token_id = box.object_pointer;
         if (pointed_token_id === parent_proof.token_id) return 0.00;
 
